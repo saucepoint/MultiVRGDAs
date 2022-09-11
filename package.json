@@ -2,13 +2,13 @@
   "name": "vrgdas",
   "license": "MIT",
   "version": "1.0.0",
-  "description": "Variable Rate Gradual Dutch Auctions.",
+  "description": "Multiple Variable Rate Gradual Dutch Auctions.",
   "files": [
     "src/**/*.sol"
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/transmissions11/VRGDAs.git"
+    "url": "git+https://github.com/saucepoint/MultiVRGDAs.git"
   },
   "devDependencies": {
     "prettier": "^2.3.1",
