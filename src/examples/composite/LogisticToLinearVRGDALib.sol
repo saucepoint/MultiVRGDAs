@@ -62,7 +62,14 @@ library LogisticToLinearVRGDALib {
     {
         int256 timeDelta;
         unchecked {
-            timeDelta = timeSinceStart - getTargetSaleTime(self, toWadUnsafe(sold + 1));
+            timeDelta = timeSinceStart - getTargetSaleTime(
+                self.logisticLimit,
+                self.timeScale,
+                self.soldBySwitch,
+                self.switchTime,
+                self.perTimeUnit,
+                toWadUnsafe(sold + 1)
+            );
         }
         return VRGDALib.getVRGDAPrice(self.vrgda.targetPrice, self.vrgda.decayConstant, timeDelta);
     }
@@ -72,10 +79,22 @@ library LogisticToLinearVRGDALib {
     /// @return int256 The target time the tokens should be sold by, scaled by 1e18, where the time is
     /// relative, such that 0 means the tokens should be sold immediately when the VRGDA begins.
     function getTargetSaleTime(LogisticToLinearVRGDAx memory self, int256 sold) internal pure returns (int256) {
+        // If we've not yet reached the number of sales required for the switch
+        // to occur, we'll continue using the standard logistic VRGDA schedule.
         if (sold < self.soldBySwitch) return LogisticVRGDALib.getTargetSaleTime(self.logisticLimit, self.timeScale, sold);
         
         unchecked {
             return unsafeWadDiv(sold - self.soldBySwitch, self.perTimeUnit) + self.switchTime;
+        }
+    }
+
+    function getTargetSaleTime(int256 logisticLimit, int256 timeScale, int256 soldBySwitch, int256 switchTime, int256 perTimeUnit, int256 sold) internal pure returns (int256) {
+        // If we've not yet reached the number of sales required for the switch
+        // to occur, we'll continue using the standard logistic VRGDA schedule.
+        if (sold < soldBySwitch) return LogisticVRGDALib.getTargetSaleTime(logisticLimit, timeScale, sold);
+        
+        unchecked {
+            return unsafeWadDiv(sold - soldBySwitch, perTimeUnit) + switchTime;
         }
     }
 }

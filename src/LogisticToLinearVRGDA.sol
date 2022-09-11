@@ -5,6 +5,7 @@ import {unsafeWadDiv} from "solmate/utils/SignedWadMath.sol";
 
 import {VRGDA} from "./VRGDA.sol";
 import {LogisticVRGDA} from "./LogisticVRGDA.sol";
+import {LogisticToLinearVRGDALib} from "./examples/composite/LogisticToLinearVRGDALib.sol";
 
 /// @title Logistic To Linear Variable Rate Gradual Dutch Auction
 /// @author transmissions11 <t11s@paradigm.xyz>
@@ -60,12 +61,13 @@ abstract contract LogisticToLinearVRGDA is LogisticVRGDA {
     /// @return The target time the tokens should be sold by, scaled by 1e18, where the time is
     /// relative, such that 0 means the tokens should be sold immediately when the VRGDA begins.
     function getTargetSaleTime(int256 sold) public view virtual override returns (int256) {
-        // If we've not yet reached the number of sales required for the switch
-        // to occur, we'll continue using the standard logistic VRGDA schedule.
-        if (sold < soldBySwitch) return LogisticVRGDA.getTargetSaleTime(sold);
-
-        unchecked {
-            return unsafeWadDiv(sold - soldBySwitch, perTimeUnit) + switchTime;
-        }
+        return LogisticToLinearVRGDALib.getTargetSaleTime(
+            logisticLimit,
+            timeScale,
+            soldBySwitch,
+            switchTime,
+            perTimeUnit,
+            sold
+        );
     }
 }
