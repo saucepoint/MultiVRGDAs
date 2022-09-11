@@ -13,6 +13,7 @@ struct VRGDAx {
 /// @title Variable Rate Gradual Dutch Auction
 /// @author transmissions11 <t11s@paradigm.xyz>
 /// @author FrankieIsLost <frankie@paradigm.xyz>
+/// @author saucepoint
 /// @notice Sell tokens roughly according to an issuance schedule.
 library VRGDALib {
 
